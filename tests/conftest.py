@@ -198,7 +198,7 @@ def usuario_teste():
         "nome": "Usuario Teste",
         "email": "teste@example.com",
         "senha": "Senha@123",
-        "perfil": Perfil.CLIENTE.value  # Usa Enum Perfil
+        "perfil": Perfil.AUTOR.value  # Usa Enum Perfil
     }
 
 
@@ -219,7 +219,7 @@ def criar_usuario(client):
     Fixture que retorna uma função para criar usuários
     Útil para criar múltiplos usuários em um teste
     """
-    def _criar_usuario(nome: str, email: str, senha: str, perfil: str = Perfil.CLIENTE.value):
+    def _criar_usuario(nome: str, email: str, senha: str, perfil: str = Perfil.AUTOR.value):
         """Cadastra um usuário via endpoint de cadastro"""
         response = client.post("/cadastrar", data={
             "perfil": perfil,
@@ -298,38 +298,38 @@ def admin_autenticado(client, criar_usuario, fazer_login, admin_teste):
 
 
 @pytest.fixture
-def vendedor_teste():
-    """Dados de um vendedor de teste"""
+def leitor_teste():
+    """Dados de um leitor de teste"""
     return {
-        "nome": "Vendedor Teste",
-        "email": "vendedor@example.com",
-        "senha": "Vendedor@123",
-        "perfil": Perfil.VENDEDOR.value
+        "nome": "Leitor Teste",
+        "email": "leitor@example.com",
+        "senha": "Leitor@123",
+        "perfil": Perfil.LEITOR.value
     }
 
 
 @pytest.fixture
-def vendedor_autenticado(client, criar_usuario, fazer_login, vendedor_teste):
+def leitor_autenticado(client, criar_usuario, fazer_login, leitor_teste):
     """
-    Fixture que retorna um cliente autenticado como vendedor
+    Fixture que retorna um cliente autenticado como leitor
     """
     # Importar para manipular diretamente o banco
     from repo import usuario_repo
     from model.usuario_model import Usuario
     from util.security import criar_hash_senha
 
-    # Criar vendedor diretamente no banco
-    vendedor = Usuario(
-        id=0,
-        nome=vendedor_teste["nome"],
-        email=vendedor_teste["email"],
-        senha=criar_hash_senha(vendedor_teste["senha"]),
-        perfil=Perfil.VENDEDOR.value
+    # Criar leitor diretamente no banco
+    leitor = Usuario(
+        id=4,
+        nome=leitor_teste["nome"],
+        email=leitor_teste["email"],
+        senha=criar_hash_senha(leitor_teste["senha"]),
+        perfil=Perfil.LEITOR.value
     )
-    usuario_repo.inserir(vendedor)
+    usuario_repo.inserir(leitor)
 
     # Fazer login
-    fazer_login(vendedor_teste["email"], vendedor_teste["senha"])
+    fazer_login(leitor_teste["email"], leitor_teste["senha"])
 
     # Retornar cliente autenticado
     return client

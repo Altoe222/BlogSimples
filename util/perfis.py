@@ -34,4 +34,7 @@ class Perfil(EnumEntidade):
     ADMIN = "Administrador"
     AUTOR = "Autor"
     LEITOR = "Leitor"
+    # Compatibilidade: manter os nomes antigos como aliases
+    CLIENTE = AUTOR
+    VENDEDOR = LEITOR
     # FIM DOS PERFIS ############################################

@@ -26,6 +26,15 @@ class UsuarioLogado:
         """Verifica se o usuário é leitor."""
         return self.perfil == Perfil.LEITOR.value
 
+    # Compatibilidade: manter os métodos antigos como wrappers
+    def is_cliente(self) -> bool:
+        """Compatibilidade: antigo nome is_cliente() -> is_autor()"""
+        return self.is_autor()
+
+    def is_vendedor(self) -> bool:
+        """Compatibilidade: antigo nome is_vendedor() -> is_leitor()"""
+        return self.is_leitor()
+
     def tem_perfil(self, *perfis: str) -> bool:
         """
         Verifica se o usuário tem um dos perfis especificados.

@@ -1,0 +1,60 @@
+{% extends "base_privada.html" %}
+
+{% block titulo %}Gerenciar Artigos{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="bi bi-file-text"></i> Gerenciar Artigos</h2>
+            <a href="/admin/artigos/cadastrar" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Novo Artigo
+            </a>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                {% if artigos %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Título</th>
+                                <th>Categoria</th>
+                                <th>Autor</th>
+                                <th>Data</th>
+                                <th class="text-center">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for artigo in artigos %}
+                            <tr>
+                                <td>{{ artigo.id }}</td>
+                                <td>{{ artigo.titulo }}</td>
+                                <td>{{ artigo.categoria_id or '-' }}</td>
+                                <td>{{ artigo.autor_id or '-' }}</td>
+                                <td>{{ artigo.data_cadastro|data_br if artigo.data_cadastro else '-' }}</td>
+                                <td class="text-center">
+                                    <a href="/admin/artigos/editar/{{ artigo.id }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <form action="/admin/artigos/excluir/{{ artigo.id }}" method="post" style="display:inline-block">
+                                        <button class="btn btn-sm btn-outline-danger" type="submit">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info text-center mb-0">Nenhum artigo cadastrado.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -8,6 +8,7 @@ from sql.artigo_sql import (
     OBTER_TODOS,
     OBTER_POR_ID,
     OBTER_POR_TITULO,
+    OBTER_ULTIMOS_PUBLICADOS,
 )
 from util.config import DATABASE_PATH
 
@@ -119,3 +120,15 @@ def _row_to_artigo(row) -> Artigo:
         data_cadastro=row[6],
         data_atualizacao=row[7],
     )
+
+
+def obter_ultimos_publicados(limite: int = 6) -> list[Artigo]:
+    """Retorna os últimos N artigos publicados, ordenados por data_cadastro DESC"""
+    conn = sqlite3.connect(DATABASE_PATH)
+    try:
+        cur = conn.cursor()
+        cur.execute(OBTER_ULTIMOS_PUBLICADOS, (limite,))
+        rows = cur.fetchall()
+        return [_row_to_artigo(r) for r in rows]
+    finally:
+        conn.close()

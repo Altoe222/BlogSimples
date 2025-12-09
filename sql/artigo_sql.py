@@ -39,3 +39,8 @@ OBTER_POR_TITULO = """
 SELECT id, titulo, conteudo, status, categoria_id, autor_id, data_cadastro, data_atualizacao
 FROM artigo WHERE titulo = ?
 """
+
+OBTER_ULTIMOS_PUBLICADOS = """
+SELECT id, titulo, conteudo, status, categoria_id, autor_id, data_cadastro, data_atualizacao
+FROM artigo WHERE status = 'Publicado' ORDER BY data_cadastro DESC LIMIT ?
+"""

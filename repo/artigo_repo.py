@@ -19,6 +19,13 @@ def criar_tabela():
     try:
         cur = conn.cursor()
         cur.execute(CRIAR_TABELA)
+        # Garantir coluna `visualizacoes` para instalações antigas
+        try:
+            cur.execute("ALTER TABLE artigo ADD COLUMN visualizacoes INTEGER DEFAULT 0")
+            conn.commit()
+        except Exception:
+            # coluna já existe ou não pode ser adicionada — ignorar
+            pass
         conn.commit()
     finally:
         conn.close()

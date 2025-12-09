@@ -7,7 +7,8 @@ CREATE TABLE IF NOT EXISTS artigo (
     categoria_id INTEGER,
     autor_id INTEGER,
     data_cadastro TEXT,
-    data_atualizacao TEXT
+    data_atualizacao TEXT,
+    visualizacoes INTEGER DEFAULT 0
 )
 """
 
@@ -26,26 +27,26 @@ DELETE FROM artigo WHERE id = ?
 """
 
 OBTER_TODOS = """
-SELECT id, titulo, conteudo, status, categoria_id, autor_id, data_cadastro, data_atualizacao
+SELECT id, titulo, conteudo, status, categoria_id, autor_id, data_cadastro, data_atualizacao, visualizacoes
 FROM artigo ORDER BY data_cadastro DESC
 """
 
 OBTER_POR_ID = """
-SELECT id, titulo, conteudo, status, categoria_id, autor_id, data_cadastro, data_atualizacao
+SELECT id, titulo, conteudo, status, categoria_id, autor_id, data_cadastro, data_atualizacao, visualizacoes
 FROM artigo WHERE id = ?
 """
 
 OBTER_POR_TITULO = """
-SELECT id, titulo, conteudo, status, categoria_id, autor_id, data_cadastro, data_atualizacao
+SELECT id, titulo, conteudo, status, categoria_id, autor_id, data_cadastro, data_atualizacao, visualizacoes
 FROM artigo WHERE titulo = ?
 """
 
 OBTER_ULTIMOS_PUBLICADOS = """
-SELECT id, titulo, conteudo, status, categoria_id, autor_id, data_cadastro, data_atualizacao
+SELECT id, titulo, conteudo, status, categoria_id, autor_id, data_cadastro, data_atualizacao, visualizacoes
 FROM artigo WHERE status = 'Publicado' ORDER BY data_cadastro DESC LIMIT ?
 """
 
 OBTER_PUBLICADOS = """
-SELECT id, titulo, conteudo, status, categoria_id, autor_id, data_cadastro, data_atualizacao
+SELECT id, titulo, conteudo, status, categoria_id, autor_id, data_cadastro, data_atualizacao, visualizacoes
 FROM artigo WHERE status = 'Publicado' ORDER BY data_cadastro DESC
 """

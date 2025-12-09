@@ -12,10 +12,11 @@
                             <h5 class="card-title">{{ a.titulo }}</h5>
                             <p class="card-text">{{ a.conteudo[:300] }}{% if a.conteudo|length > 300 %}...{% endif %}</p>
                             <a href="/artigos/ler/{{ a.id }}" class="btn btn-primary">Ler</a>
+                            <span class="text-muted ms-2">• {{ a.visualizacoes }} visualizações</span>
                         </div>
                         <div class="card-footer text-muted small">
-                            Publicado em {{ a.data_cadastro }}
-                        </div>
+                                Publicado em {{ a.data_cadastro }} • {{ a.visualizacoes }} visualizações
+                            </div>
                     </div>
                 {% endfor %}
             {% else %}

@@ -13,6 +13,7 @@ class Artigo:
     autor_id: Optional[int] = None
     data_cadastro: Optional[str] = None
     data_atualizacao: Optional[str] = None
+    visualizacoes: int = 0
 
     def set_timestamps_for_insert(self):
         now = datetime.utcnow().isoformat(sep=" ")

@@ -108,7 +108,7 @@ async def sobre(request: Request):
 
 
 @router.get("/artigos")
-async def listar_artigos(request: Request, page: int = 1):
+async def listar_artigos(request: Request, page: int = 1, categoria: int | None = None):
     """Lista pública de artigos publicados (paginada)."""
     ip = obter_identificador_cliente(request)
     if not public_limiter.verificar(ip):
@@ -122,7 +122,7 @@ async def listar_artigos(request: Request, page: int = 1):
 
     limite = 10
     offset = (max(page, 1) - 1) * limite
-    artigos = artigo_repo.obter_publicados(offset=offset, limite=limite)
+    artigos = artigo_repo.obter_publicados(offset=offset, limite=limite, categoria_id=categoria)
     categorias = categoria_repo.obter_todos()
     usuario_logado = obter_usuario_logado(request)
 
@@ -150,6 +150,13 @@ async def ler_artigo(request: Request, artigo_id: int):
             {"request": request},
             status_code=status.HTTP_429_TOO_MANY_REQUESTS
         )
+
+    # incrementa contador de visualizacoes e refaz o fetch para exibir o novo valor
+    try:
+        artigo_repo.incrementar_visualizacoes(artigo_id)
+    except Exception:
+        # não bloquear a visualização se incremento falhar
+        pass
 
     artigo = artigo_repo.obter_por_id(artigo_id)
     if not artigo or artigo.status != 'Publicado':

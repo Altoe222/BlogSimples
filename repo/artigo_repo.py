@@ -120,6 +120,7 @@ def _row_to_artigo(row) -> Artigo:
         autor_id=row[5],
         data_cadastro=row[6],
         data_atualizacao=row[7],
+        visualizacoes=row[8] if len(row) > 8 else 0,
     )
 
 
@@ -135,14 +136,39 @@ def obter_ultimos_publicados(limite: int = 6) -> list[Artigo]:
         conn.close()
 
 
-def obter_publicados(offset: int = 0, limite: int = 20) -> list[Artigo]:
-    """Retorna artigos publicados com paginação simples (offset, limite)"""
+def obter_publicados(offset: int = 0, limite: int = 20, categoria_id: int | None = None) -> list[Artigo]:
+    """Retorna artigos publicados com paginação simples (offset, limite).
+    Se `categoria_id` for fornecido, filtra por categoria.
+    """
     conn = sqlite3.connect(DATABASE_PATH)
     try:
         cur = conn.cursor()
-        # usamos slicing via LIMIT ? OFFSET ?
-        cur.execute(OBTER_PUBLICADOS + " LIMIT ? OFFSET ?", (limite, offset))
+        if categoria_id:
+            # adiciona filtro de categoria
+            query = OBTER_PUBLICADOS + " AND categoria_id = ? LIMIT ? OFFSET ?"
+            cur.execute(query, (categoria_id, limite, offset))
+        else:
+            # usamos slicing via LIMIT ? OFFSET ?
+            cur.execute(OBTER_PUBLICADOS + " LIMIT ? OFFSET ?", (limite, offset))
+
         rows = cur.fetchall()
         return [_row_to_artigo(r) for r in rows]
+    finally:
+        conn.close()
+
+
+def incrementar_visualizacoes(artigo_id: int) -> None:
+    """Incrementa o contador de visualizações do artigo, adicionando a coluna se necessário."""
+    conn = sqlite3.connect(DATABASE_PATH)
+    try:
+        cur = conn.cursor()
+        # tenta criar a coluna caso não exista (ignore se já existir)
+        try:
+            cur.execute("ALTER TABLE artigo ADD COLUMN visualizacoes INTEGER DEFAULT 0")
+        except Exception:
+            pass
+
+        cur.execute("UPDATE artigo SET visualizacoes = COALESCE(visualizacoes, 0) + 1 WHERE id = ?", (artigo_id,))
+        conn.commit()
     finally:
         conn.close()

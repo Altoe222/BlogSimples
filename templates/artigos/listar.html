@@ -1,0 +1,48 @@
+{% extends 'base_publica.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Artigos</h1>
+    <div class="row">
+        <div class="col-md-8">
+            {% if artigos %}
+                {% for a in artigos %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ a.titulo }}</h5>
+                            <p class="card-text">{{ a.conteudo[:300] }}{% if a.conteudo|length > 300 %}...{% endif %}</p>
+                            <a href="/artigos/ler/{{ a.id }}" class="btn btn-primary">Ler</a>
+                        </div>
+                        <div class="card-footer text-muted small">
+                            Publicado em {{ a.data_cadastro }}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>Nenhum artigo publicado encontrado.</p>
+            {% endif %}
+
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    {% if pagina > 1 %}
+                        <li class="page-item"><a class="page-link" href="/artigos?page={{ pagina - 1 }}">Anterior</a></li>
+                    {% endif %}
+                    <li class="page-item active"><span class="page-link">{{ pagina }}</span></li>
+                    {% if artigos|length >= 10 %}
+                        <li class="page-item"><a class="page-link" href="/artigos?page={{ pagina + 1 }}">Próxima</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+
+        <div class="col-md-4">
+            <div class="list-group">
+                <a class="list-group-item list-group-item-action active">Categorias</a>
+                {% for c in categorias %}
+                    <a href="/artigos?categoria={{ c.id }}" class="list-group-item list-group-item-action">{{ c.nome }}</a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

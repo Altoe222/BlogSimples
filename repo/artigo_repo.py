@@ -9,6 +9,7 @@ from sql.artigo_sql import (
     OBTER_POR_ID,
     OBTER_POR_TITULO,
     OBTER_ULTIMOS_PUBLICADOS,
+    OBTER_PUBLICADOS,
 )
 from util.config import DATABASE_PATH
 
@@ -128,6 +129,19 @@ def obter_ultimos_publicados(limite: int = 6) -> list[Artigo]:
     try:
         cur = conn.cursor()
         cur.execute(OBTER_ULTIMOS_PUBLICADOS, (limite,))
+        rows = cur.fetchall()
+        return [_row_to_artigo(r) for r in rows]
+    finally:
+        conn.close()
+
+
+def obter_publicados(offset: int = 0, limite: int = 20) -> list[Artigo]:
+    """Retorna artigos publicados com paginação simples (offset, limite)"""
+    conn = sqlite3.connect(DATABASE_PATH)
+    try:
+        cur = conn.cursor()
+        # usamos slicing via LIMIT ? OFFSET ?
+        cur.execute(OBTER_PUBLICADOS + " LIMIT ? OFFSET ?", (limite, offset))
         rows = cur.fetchall()
         return [_row_to_artigo(r) for r in rows]
     finally:

@@ -105,3 +105,69 @@ async def sobre(request: Request):
         "sobre.html",
         {"request": request}
     )
+
+
+@router.get("/artigos")
+async def listar_artigos(request: Request, page: int = 1):
+    """Lista pública de artigos publicados (paginada)."""
+    ip = obter_identificador_cliente(request)
+    if not public_limiter.verificar(ip):
+        informar_erro(request, "Muitas requisições. Aguarde alguns minutos.")
+        logger.warning(f"Rate limit excedido para página pública - IP: {ip}")
+        return templates_public.TemplateResponse(
+            "errors/429.html",
+            {"request": request},
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS
+        )
+
+    limite = 10
+    offset = (max(page, 1) - 1) * limite
+    artigos = artigo_repo.obter_publicados(offset=offset, limite=limite)
+    categorias = categoria_repo.obter_todos()
+    usuario_logado = obter_usuario_logado(request)
+
+    return templates_public.TemplateResponse(
+        "artigos/listar.html",
+        {
+            "request": request,
+            "usuario_logado": usuario_logado,
+            "artigos": artigos,
+            "categorias": categorias,
+            "pagina": page,
+        }
+    )
+
+
+@router.get("/artigos/ler/{artigo_id}")
+async def ler_artigo(request: Request, artigo_id: int):
+    """Visualiza um artigo publicado por id."""
+    ip = obter_identificador_cliente(request)
+    if not public_limiter.verificar(ip):
+        informar_erro(request, "Muitas requisições. Aguarde alguns minutos.")
+        logger.warning(f"Rate limit excedido para página pública - IP: {ip}")
+        return templates_public.TemplateResponse(
+            "errors/429.html",
+            {"request": request},
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS
+        )
+
+    artigo = artigo_repo.obter_por_id(artigo_id)
+    if not artigo or artigo.status != 'Publicado':
+        return templates_public.TemplateResponse(
+            "errors/404.html",
+            {"request": request},
+            status_code=status.HTTP_404_NOT_FOUND
+        )
+
+    usuario_logado = obter_usuario_logado(request)
+    categorias = categoria_repo.obter_todos()
+
+    return templates_public.TemplateResponse(
+        "artigos/ler.html",
+        {
+            "request": request,
+            "usuario_logado": usuario_logado,
+            "artigo": artigo,
+            "categorias": categorias,
+        }
+    )

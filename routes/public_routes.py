@@ -122,7 +122,15 @@ async def listar_artigos(request: Request, page: int = 1, categoria: int | None 
 
     limite = 10
     offset = (max(page, 1) - 1) * limite
-    artigos = artigo_repo.obter_publicados(offset=offset, limite=limite, categoria_id=categoria)
+    # Converter categoria para int se fornecida
+    categoria_id = None
+    if categoria:
+        try:
+            categoria_id = int(categoria)
+        except (ValueError, TypeError):
+            categoria_id = None
+    
+    artigos = artigo_repo.obter_publicados(offset=offset, limite=limite, categoria_id=categoria_id)
     categorias = categoria_repo.obter_todos()
     usuario_logado = obter_usuario_logado(request)
 

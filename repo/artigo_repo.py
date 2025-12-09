@@ -150,12 +150,12 @@ def obter_publicados(offset: int = 0, limite: int = 20, categoria_id: int | None
     conn = sqlite3.connect(DATABASE_PATH)
     try:
         cur = conn.cursor()
-        if categoria_id:
-            # adiciona filtro de categoria
-            query = OBTER_PUBLICADOS + " AND categoria_id = ? LIMIT ? OFFSET ?"
+        if categoria_id and categoria_id > 0:
+            # adiciona filtro de categoria ANTES do ORDER BY
+            query = "SELECT id, titulo, conteudo, status, categoria_id, autor_id, data_cadastro, data_atualizacao, visualizacoes FROM artigo WHERE status = 'Publicado' AND categoria_id = ? ORDER BY data_cadastro DESC LIMIT ? OFFSET ?"
             cur.execute(query, (categoria_id, limite, offset))
         else:
-            # usamos slicing via LIMIT ? OFFSET ?
+            # usamos query padrão sem filtro
             cur.execute(OBTER_PUBLICADOS + " LIMIT ? OFFSET ?", (limite, offset))
 
         rows = cur.fetchall()
